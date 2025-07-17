@@ -1,0 +1,55 @@
+
+{
+  "common": {
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "download": "Télécharger",
+    "view": "Consulter",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "warning": "Attention",
+    "info": "Information"
+  },
+  "header": {
+    "title": "dalil.dz",
+    "subtitle": "Plateforme de veille juridique et réglementaire",
+    "searchPlaceholder": "Recherche rapide..."
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "legalTexts": "Textes juridiques",
+    "procedures": "Procédures administratives",
+    "analysis": "Analyses et rapports",
+    "collaboration": "Collaboration",
+    "news": "Actualités et références",
+    "configuration": "Configuration",
+    "help": "Aide"
+  },
+  "auth": {
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "register": "Inscription",
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "loginButton": "Se connecter",
+    "registerButton": "S'inscrire",
+    "loginError": "Erreur de connexion",
+    "registerError": "Erreur d'inscription",
+    "loginSuccess": "Connexion réussie",
+    "registerSuccess": "Inscription réussie"
+  },
+  "validation": {
+    "required": "Ce champ est requis",
+    "email": "Adresse email invalide",
+    "minLength": "Minimum {{count}} caractères",
+    "maxLength": "Maximum {{count}} caractères",
+    "passwordMismatch": "Les mots de passe ne correspondent pas"
+  }
+}
