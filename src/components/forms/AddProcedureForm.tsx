@@ -11,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useFormLibraryStore, SavedForm } from '@/stores/formLibraryStore';
+import { ALL_FORM_TEMPLATES } from '@/data/formTemplatesFinal';
+import { FormTemplate } from '@/data/formTemplates';
 
 interface AddProcedureFormProps {
   isOpen: boolean;
@@ -19,28 +21,26 @@ interface AddProcedureFormProps {
 
 export function AddProcedureForm({ isOpen, onClose }: AddProcedureFormProps) {
   const { toast } = useToast();
-  const { forms } = useFormLibraryStore();
+  const { forms: customForms } = useFormLibraryStore();
   const [selectedFormId, setSelectedFormId] = useState('');
-  const [selectedForm, setSelectedForm] = useState<SavedForm | null>(null);
+  const [selectedForm, setSelectedForm] = useState<FormTemplate | null>(null);
   const [formData, setFormData] = useState<{ [key: string]: any }>({});
 
-  // Filtrer les formulaires de type "procedures_administratives"
-  const procedureForms = forms.filter(form => 
-    form.type.toLowerCase().includes('procedure') || 
-    form.category === 'Procédures Administratives' ||
-    form.type === 'procedures_administratives' ||
-    ['État Civil', 'Urbanisme', 'Commerce', 'Emploi', 'Santé', 'Éducation', 'Transport', 'Fiscalité'].includes(form.category)
+  // Filtrer les formulaires de la bibliothèque pour les procédures administratives
+  const procedureCategories = ['État Civil', 'Urbanisme', 'Commerce', 'Emploi', 'Santé', 'Éducation', 'Transport', 'Fiscalité'];
+  const procedureForms = ALL_FORM_TEMPLATES.filter(form => 
+    procedureCategories.includes(form.category)
   );
 
   useEffect(() => {
     if (selectedFormId) {
-      const form = forms.find(f => f.id === selectedFormId);
+      const form = procedureForms.find(f => f.id === selectedFormId);
       if (form) {
         setSelectedForm(form);
         // Initialiser les données du formulaire avec des valeurs vides
         const initialData: { [key: string]: any } = {};
         form.fields.forEach(field => {
-          initialData[field.id] = field.defaultValue || '';
+          initialData[field.name] = '';
         });
         setFormData(initialData);
       }
@@ -48,7 +48,7 @@ export function AddProcedureForm({ isOpen, onClose }: AddProcedureFormProps) {
       setSelectedForm(null);
       setFormData({});
     }
-  }, [selectedFormId, forms]);
+  }, [selectedFormId, procedureForms]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,23 +131,23 @@ export function AddProcedureForm({ isOpen, onClose }: AddProcedureFormProps) {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {selectedForm.fields.map((field) => (
-                    <div key={field.id} className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
-                      <Label htmlFor={field.id}>
+                    <div key={field.name} className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
+                      <Label htmlFor={field.name}>
                         {field.label} {field.required && <span className="text-red-500">*</span>}
                       </Label>
                       {field.type === 'textarea' ? (
                         <Textarea
-                          id={field.id}
-                          value={formData[field.id] || ''}
-                          onChange={(e) => setFormData({...formData, [field.id]: e.target.value})}
+                          id={field.name}
+                          value={formData[field.name] || ''}
+                          onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
                           placeholder={field.placeholder}
                           required={field.required}
                           rows={3}
                         />
                       ) : field.type === 'select' && field.options ? (
                         <Select 
-                          value={formData[field.id] || ''} 
-                          onValueChange={(value) => setFormData({...formData, [field.id]: value})}
+                          value={formData[field.name] || ''} 
+                          onValueChange={(value) => setFormData({...formData, [field.name]: value})}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder={field.placeholder || `Sélectionner ${field.label.toLowerCase()}`} />
@@ -163,18 +163,18 @@ export function AddProcedureForm({ isOpen, onClose }: AddProcedureFormProps) {
                       ) : field.type === 'checkbox' ? (
                         <div className="flex items-center space-x-2">
                           <Switch
-                            id={field.id}
-                            checked={formData[field.id] || false}
-                            onCheckedChange={(checked) => setFormData({...formData, [field.id]: checked})}
+                            id={field.name}
+                            checked={formData[field.name] || false}
+                            onCheckedChange={(checked) => setFormData({...formData, [field.name]: checked})}
                           />
-                          <Label htmlFor={field.id}>{field.placeholder || field.label}</Label>
+                          <Label htmlFor={field.name}>{field.placeholder || field.label}</Label>
                         </div>
                       ) : (
                         <Input
-                          id={field.id}
+                          id={field.name}
                           type={field.type || 'text'}
-                          value={formData[field.id] || ''}
-                          onChange={(e) => setFormData({...formData, [field.id]: e.target.value})}
+                          value={formData[field.name] || ''}
+                          onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
                           placeholder={field.placeholder}
                           required={field.required}
                         />

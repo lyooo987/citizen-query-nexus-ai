@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useFormLibraryStore, SavedForm } from '@/stores/formLibraryStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ALL_FORM_TEMPLATES } from '@/data/formTemplatesFinal';
+import { FormTemplate } from '@/data/formTemplates';
 
 interface AddLegalTextFormProps {
   isOpen: boolean;
@@ -17,27 +19,26 @@ interface AddLegalTextFormProps {
 
 export function AddLegalTextForm({ isOpen, onClose }: AddLegalTextFormProps) {
   const { toast } = useToast();
-  const { forms } = useFormLibraryStore();
+  const { forms: customForms } = useFormLibraryStore();
   const [selectedFormId, setSelectedFormId] = useState('');
-  const [selectedForm, setSelectedForm] = useState<SavedForm | null>(null);
+  const [selectedForm, setSelectedForm] = useState<FormTemplate | null>(null);
   const [formData, setFormData] = useState<{ [key: string]: any }>({});
 
-  // Filtrer les formulaires de type "textes_juridiques"
-  const legalTextForms = forms.filter(form => 
-    form.type.toLowerCase().includes('juridique') || 
-    form.category === 'Textes Juridiques' ||
-    form.type === 'textes_juridiques'
+  // Filtrer les formulaires de la bibliothèque pour les textes juridiques
+  const procedureCategories = ['État Civil', 'Urbanisme', 'Commerce', 'Emploi', 'Santé', 'Éducation', 'Transport', 'Fiscalité'];
+  const legalTextForms = ALL_FORM_TEMPLATES.filter(form => 
+    !procedureCategories.includes(form.category)
   );
 
   useEffect(() => {
     if (selectedFormId) {
-      const form = forms.find(f => f.id === selectedFormId);
+      const form = legalTextForms.find(f => f.id === selectedFormId);
       if (form) {
         setSelectedForm(form);
         // Initialiser les données du formulaire avec des valeurs vides
         const initialData: { [key: string]: any } = {};
         form.fields.forEach(field => {
-          initialData[field.id] = field.defaultValue || '';
+          initialData[field.name] = '';
         });
         setFormData(initialData);
       }
@@ -45,7 +46,7 @@ export function AddLegalTextForm({ isOpen, onClose }: AddLegalTextFormProps) {
       setSelectedForm(null);
       setFormData({});
     }
-  }, [selectedFormId, forms]);
+  }, [selectedFormId, legalTextForms]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,23 +129,23 @@ export function AddLegalTextForm({ isOpen, onClose }: AddLegalTextFormProps) {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {selectedForm.fields.map((field) => (
-                    <div key={field.id} className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
-                      <Label htmlFor={field.id}>
+                    <div key={field.name} className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
+                      <Label htmlFor={field.name}>
                         {field.label} {field.required && <span className="text-red-500">*</span>}
                       </Label>
                       {field.type === 'textarea' ? (
                         <Textarea
-                          id={field.id}
-                          value={formData[field.id] || ''}
-                          onChange={(e) => setFormData({...formData, [field.id]: e.target.value})}
+                          id={field.name}
+                          value={formData[field.name] || ''}
+                          onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
                           placeholder={field.placeholder}
                           required={field.required}
                           rows={3}
                         />
                       ) : field.type === 'select' && field.options ? (
                         <Select 
-                          value={formData[field.id] || ''} 
-                          onValueChange={(value) => setFormData({...formData, [field.id]: value})}
+                          value={formData[field.name] || ''} 
+                          onValueChange={(value) => setFormData({...formData, [field.name]: value})}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder={field.placeholder || `Sélectionner ${field.label.toLowerCase()}`} />
@@ -159,10 +160,10 @@ export function AddLegalTextForm({ isOpen, onClose }: AddLegalTextFormProps) {
                         </Select>
                       ) : (
                         <Input
-                          id={field.id}
+                          id={field.name}
                           type={field.type || 'text'}
-                          value={formData[field.id] || ''}
-                          onChange={(e) => setFormData({...formData, [field.id]: e.target.value})}
+                          value={formData[field.name] || ''}
+                          onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
                           placeholder={field.placeholder}
                           required={field.required}
                         />
