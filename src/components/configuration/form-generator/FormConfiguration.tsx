@@ -72,7 +72,7 @@ export function FormConfiguration({
             </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="form-list">Liste des formulaires</Label>
+            <Label htmlFor="form-list">Liste des formulaires *</Label>
             <Select 
               value={selectedFormList} 
               onValueChange={handleFormListChange}
@@ -101,7 +101,7 @@ export function FormConfiguration({
         
         <div className="space-y-2">
           <Label htmlFor="form-description">
-            Description du formulaire {!selectedFormList && <span className="text-red-500">*</span>}
+            Description du formulaire
           </Label>
           <Textarea
             id="form-description"
@@ -109,13 +109,12 @@ export function FormConfiguration({
             value={formDescription}
             onChange={(e) => onDescriptionChange(e.target.value)}
             rows={3}
-            required={!selectedFormList}
           />
         </div>
         
         <Button 
           onClick={onGenerate} 
-          disabled={!selectedFormType || (!selectedFormList && !formDescription.trim())}
+          disabled={!selectedFormType || !selectedFormList}
           className="w-full md:w-auto"
         >
           <Wand2 className="w-4 h-4 mr-2" />
